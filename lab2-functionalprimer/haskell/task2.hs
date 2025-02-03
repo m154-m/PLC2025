@@ -1,3 +1,4 @@
+-- added a new method and printed in the main do block
 onePlusone = putStrLn "1+1=2"
 
 main = do
