@@ -5,10 +5,10 @@ import System.IO (hSetBuffering, stdout, BufferMode(..))
 main =
     do
     initialiseIO
-    putStrLn ("known errors = " ++ show allErrors)
-    error <- getElement "error"
-    putStrLn (show error ++ " results in: " ++ show (error2Result error))
-    
+    putStrLn ("known results = " ++ show allResults)
+    result <- getElement "result"
+    putStrLn (show result ++ " results in: " ++ show (result2Error result))
+
 initialiseIO =
     do
     hSetBuffering stdout NoBuffering
@@ -27,18 +27,20 @@ data Result = Zero | Infinity | ABitDifferent | VeryDifferent
               Bounded, -- default minBound and maxBound
               Enum) -- default sequencing (needed for .. ranges)
 
-allErrors :: [Error] -- ie it is a list of PL elements
-allErrors = [minBound .. maxBound]
+allResults :: [Result] -- ie it is a list of PL elements
+allResults = [minBound .. maxBound]
 
-error2Result FP_Rounding = ABitDifferent
-error2Result FP_Overflow = Infinity
-error2Result FP_Underflow = Zero
-error2Result Int_Overflow = VeryDifferent
+-- Reverse mapping: Result to Error
+result2Error :: Result -> Error
+result2Error Zero = FP_Underflow
+result2Error Infinity = FP_Overflow
+result2Error ABitDifferent = FP_Rounding
+result2Error VeryDifferent = Int_Overflow
 
 -- The code below should not be changed and does not need to be fully understood.
 
-{-
-  `getElement'
+{- 
+  `getElement' 
   queries the user for one element until the user types something 
   that can be interpreted as the correct type of element (eg integer)
 -}
